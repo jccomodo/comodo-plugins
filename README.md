@@ -1,6 +1,6 @@
 # Plugins do Claude da Cômodo
 
-Marketplace privado. Por enquanto tem um plugin:
+Marketplace privado com os plugins de vídeo da Cômodo:
 
 - **video-daniel-comodo**: vídeos com o clone de IA do Daniel nos formatos A (horizontal), B (vertical) e C (tela dividida); voz na ElevenLabs, vídeo na HeyGen. Veja `video-daniel-comodo/LEIA-ME.md`.
 - **editor-videos-comodo**: edição no padrão do time (reels/ADS CMDxxx, legenda padrão, zooms, motions, LUT) e decupagem com cortes suaves para o Premiere. Veja `editor-videos-comodo/LEIA-ME.md`.
@@ -12,5 +12,7 @@ No terminal `claude`:
 ```
 /plugin marketplace add jccomodo/comodo-plugins
 /plugin install video-daniel-comodo@comodo
+/plugin install editor-videos-comodo@comodo
+/plugin install validador-videos-comodo@comodo
 ```
 É preciso ter acesso a este repositório privado no GitHub.
