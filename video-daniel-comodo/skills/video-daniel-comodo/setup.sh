@@ -15,7 +15,7 @@ FALTA=""
 command -v node >/dev/null || FALTA="$FALTA Node.js LTS (nodejs.org);"
 command -v python3 >/dev/null || FALTA="$FALTA Python 3 (python.org);"
 command -v ffmpeg >/dev/null || FALTA="$FALTA ffmpeg (brew install ffmpeg);"
-command -v python3 >/dev/null && python3 -m pip install --quiet --disable-pip-version-check faster-whisper
+command -v python3 >/dev/null && python3 -m pip install --quiet --disable-pip-version-check faster-whisper playwright pillow numpy && python3 -m playwright install chromium
 echo ""; echo "PASTA: $DEST"
 [ -n "$FALTA" ] && echo "FALTA INSTALAR:$FALTA"
 for k in ELEVENLABS_API_KEY ELEVENLABS_VOICE_A HEYGEN_API_KEY; do

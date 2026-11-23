@@ -1,7 +1,16 @@
 {
   "name": "video-daniel-comodo",
-  "version": "1.0.0",
-  "description": "Vídeos com o clone de IA do Daniel: narração com a voz dele (ElevenLabs), vídeo na HeyGen com Avatar 6 Turbo (cenário original ou estúdio), troca de frases sem regravar e entrega do MP4. Windows e Mac.",
-  "author": { "name": "Cômodo" },
-  "keywords": ["video", "heygen", "elevenlabs", "avatar", "daniel", "comodo"]
+  "version": "1.1.0",
+  "description": "Vídeos com o clone de IA do Daniel em 3 formatos: A horizontal (YouTube), B vertical (Shorts/Reels) e C tela dividida com animações. Narração ElevenLabs + HeyGen Avatar 6 Turbo.",
+  "author": {
+    "name": "Cômodo"
+  },
+  "keywords": [
+    "video",
+    "heygen",
+    "elevenlabs",
+    "avatar",
+    "daniel",
+    "comodo"
+  ]
 }

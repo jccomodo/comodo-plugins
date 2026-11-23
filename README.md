@@ -2,7 +2,7 @@
 
 Marketplace privado. Por enquanto tem um plugin:
 
-- **video-daniel-comodo**: vídeos com o clone de IA do Daniel (voz na ElevenLabs, vídeo na HeyGen). Veja `video-daniel-comodo/LEIA-ME.md`.
+- **video-daniel-comodo**: vídeos com o clone de IA do Daniel nos formatos A (horizontal), B (vertical) e C (tela dividida); voz na ElevenLabs, vídeo na HeyGen. Veja `video-daniel-comodo/LEIA-ME.md`.
 
 ## Adicionar no Claude
 No app Claude: Personalização → Plugins → Adicionar → marketplace → `jccomodo/comodo-plugins`. Depois instale `video-daniel-comodo`.

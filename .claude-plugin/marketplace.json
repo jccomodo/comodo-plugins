@@ -1,11 +1,13 @@
 {
   "name": "comodo",
-  "owner": { "name": "Cômodo" },
+  "owner": {
+    "name": "Cômodo"
+  },
   "plugins": [
     {
       "name": "video-daniel-comodo",
       "source": "./video-daniel-comodo",
-      "description": "Vídeos com o clone de IA do Daniel: narração na voz dele (ElevenLabs) e vídeo na HeyGen (Avatar 6 Turbo), com cenário original ou estúdio."
+      "description": "Vídeos com o clone de IA do Daniel em 3 formatos: A horizontal (YouTube), B vertical (Shorts/Reels) e C tela dividida com animações. Narração ElevenLabs + HeyGen Avatar 6 Turbo."
     }
   ]
 }
