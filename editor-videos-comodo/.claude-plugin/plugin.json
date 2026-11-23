@@ -1,6 +1,6 @@
 {
   "name": "editor-videos-comodo",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Edição dos vídeos da Cômodo no padrão do time: reels CMDxxx (cortes, zooms, legenda padrão, motions, LUT, cartão do Instagram, ADS) e decupagem com cortes suaves e exportação para o Premiere.",
   "author": {
     "name": "Cômodo"

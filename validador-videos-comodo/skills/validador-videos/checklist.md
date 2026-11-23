@@ -53,7 +53,7 @@ Marque cada item: ok / problema (com tempo) / não se aplica.
 - [ ] Legenda em sincronia com a voz (sem atraso visível).
 
 ## Entrega
-- [ ] Arquivo final em %USERPROFILE%\Claude\ENTREGAS\CMDxxx com nome CMDxxx_<estilo>_vN(.mp4); capa separada.
+- [ ] Arquivo final em %USERPROFILE%\Claude\ENTREGAS\CMDxxx como um único CMDxxx.mp4 (ADS: "CMDxxx - FEED.mp4" etc.; sem _v1/_v2); capa separada.
 - [ ] MP4 abre, duração certa, áudio presente, 1080x1920, 30 fps.
 
 ## Sombras e destaque

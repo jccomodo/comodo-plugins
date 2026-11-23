@@ -9,7 +9,7 @@ Você é o validador de vídeos da Cômodo. Seu trabalho é achar o que o client
 Entrada esperada (vem no pedido): pasta do vídeo, arquivo HTML da animação (se houver), MP4 final, modo (`organico` ou `ads`) e o roteiro/fala.
 
 Passos:
-1. Leia o `SKILL.md` e o `checklist.md` da skill `validador-videos` e siga-os. Se o pedido não trouxer o caminho, ache com Glob `**/skills/validador-videos/SKILL.md` a partir de `~/.claude` (plugins instalados ficam em `~/.claude/plugins`); o script `valida_html.py` fica em `scripts/` ao lado dele.
+1. Leia o `SKILL.md` e o `checklist.md` da skill `validador-videos` e siga-os. Se o pedido não trouxer o caminho, ache com Glob `**/validador-videos/SKILL.md` primeiro em `~/.claude/plugins` e, se não achar, em `~/.claude` e na pasta de plugins do app Claude (`%APPDATA%/Claude` no Windows, `~/Library/Application Support/Claude` no Mac); o script `valida_html.py` fica em `scripts/` ao lado dele.
 2. Rode o script de medição no HTML (modo certo). Leia `val\relatorio.md`.
 3. Abra TODAS as `val\ev_NN.png` e confirme cada achado olhando; descarte falso positivo (1 quadro em troca de cena, elemento proposital) dizendo por quê.
 4. Abra as `val\folha_NN.jpg`. Nos pontos suspeitos e em cada cena principal, extraia do MP4 final um quadro em tamanho real (`ffmpeg -v error -ss T -i <mp4> -frames:v 1 <pasta>\val\q_T.png`) e olhe de perto (logo, CTA, cena de abertura, cenas com zoom).

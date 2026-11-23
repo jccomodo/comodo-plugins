@@ -20,11 +20,17 @@ python "<pasta desta skill>\scripts\valida_html.py" <video>\<arquivo>.html --mod
 - Para o script ignorar um elemento proposital (ex.: um cursor diferente), adicione `data-val-ignore` nele no HTML.
 - Sempre abra as `ev_NN.png` antes de repassar um achado: o script mede bem, mas confirme que é problema visível. Achado de 1 quadro durante troca de cena costuma ser falso.
 
-Se o vídeo não vier de HTML (só o MP4), pule o script: extraia quadros com ffmpeg (`-vf fps=1/2`) e faça só o passo 2.
+Se o vídeo não vier de HTML (reel montado no ffmpeg, corte da decupagem, cena do clone), use o script do MP4:
+
+```
+python "<pasta desta skill>/scripts/valida_mp4.py" VIDEO.mp4 [--ass legendas.ass] [--lufs -19.5]
+```
+
+Ele mede formato, volume (LUFS e pico), quadro preto, silêncio, a 1ª palavra e se o vídeo termina com frase incompleta; com `--ass`, a sincronia de cada palavra da legenda com a fala. Saída em `val/relatorio_mp4.md` e `val/folha_mp4.jpg`. Depois faça o passo 2.
 
 ## 2. Olhar (checklist visual)
 
-Abra as folhas de contato e, nos trechos suspeitos, quadros em tamanho real (ffmpeg `-ss T -frames:v 1` no MP4 final, ou `window.render(t)` no HTML). Passe por TODOS os itens de `checklist.md` (lista do que o cliente já apontou) e marque cada um.
+Abra as folhas de contato e, nos trechos suspeitos, quadros em tamanho real (ffmpeg `-ss T -frames:v 1` no MP4 final, ou `window.render(t)` no HTML). Passe por TODOS os itens de `checklist.md` (lista do que o cliente já apontou) e marque cada um. Itens de elementos que o vídeo não tem (logo, tachado, VS, cartões do estilo D, sfx de logo) ficam como N/A, não como falha.
 
 ## 3. Laudo
 

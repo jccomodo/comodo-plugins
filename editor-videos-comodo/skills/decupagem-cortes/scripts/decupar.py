@@ -7,13 +7,14 @@ Gera na pasta de saída (padrão: <video>_decupagem):
   palavras.json   palavra por palavra com início/fim (s)
   frases.json     frases com início/fim, pausa antes e marcas
   decupagem.md    tabela legível: tempo, frase, marcas, decisão sugerida
-  cortes.txt      trechos a CORTAR (início,fim em segundos), para o auto-editor (--cut)
+  cortes.txt      trechos a CORTAR, já no formato do auto-editor: "12.40sec,15.10sec 40.02sec,41.80sec" (uma linha)
 
 Marcas:
   PAUSA     pausa >= 0,5 s antes da frase (o auto-editor corta sozinho)
   RETAKE    frase repetida/recomeçada: a anterior parecida vira CORTAR (fica a última tomada)
   MULETA    "né", "tipo", "éé", "hum" soltos (só aviso; cortar no meio da frase costuma pular)
   FALSO     frase curta abandonada (< 4 palavras seguida de recomeço)
+  INCOMPLETA última frase sem pontuação final (gravação parou no meio): sugerida para cortar
 """
 import argparse, json, os, re, sys, difflib, warnings
 warnings.filterwarnings("ignore")
@@ -90,6 +91,13 @@ def marcar(frases):
                 f["marcas"].append(f"FALSO (recomeça na frase {frases[j]['n']})")
                 f["decisao"] = "CORTAR"
                 break
+    # última frase sem ponto final e curta = gravação parou no meio ("O que faz...")
+    if frases:
+        u = frases[-1]
+        tx = u["texto"].strip()
+        if (not re.search(r"[.!?]$", tx) or tx.endswith("...")) and len(norm(tx).split()) < 8 and u["decisao"] != "CORTAR":
+            u["marcas"].append("INCOMPLETA (revisar)")
+            u["decisao"] = "CORTAR"
     return frases
 
 
@@ -118,8 +126,7 @@ def main():
             # corta da frase descartada até o começo da próxima fala (sem comer a palavra seguinte)
             cortes.append((max(0, f["ini"] - 0.05), f["fim"] + 0.05))
     with open(os.path.join(saida, "cortes.txt"), "w", encoding="utf8") as fh:
-        for i, fi in cortes:
-            fh.write(f"{i:.2f},{fi:.2f}\n")
+        fh.write(" ".join(f"{i:.2f}sec,{fi:.2f}sec" for i, fi in cortes) + "\n")  # cola direto depois de --cut
 
     linhas = ["# Decupagem: " + os.path.basename(a.video), "",
               f"{len(palavras)} palavras, {len(frases)} frases, {len(cortes)} trechos sugeridos para cortar.", "",

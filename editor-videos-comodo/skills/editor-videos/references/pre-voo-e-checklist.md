@@ -1,15 +1,14 @@
 # Pré-voo, checklist de entrega e conflitos a resolver
 
 Criado em 2026-10-22 a partir da skill de referência `yt-ddiasmatt-animation` (estrutura: ler histórico antes,
-regras fixas curtas, checklist de QA, registro no fim). Nada do `SKILL.md` original foi apagado; o backup está em
-`SKILL.md.bak-2026-10-22`.
+regras fixas curtas, checklist de QA, registro no fim). Nada do `SKILL.md` original foi apagado.
 
 ## 1. Pré-voo (antes de qualquer edição)
 
 1. **Ler as Armadilhas do `SKILL.md` e o bloco datado mais recente.** Quando duas regras divergirem, vale a de data
    mais nova; sem data clara, perguntar antes de interpretar (já é regra do `SKILL.md`).
 2. **Confirmar o pedido:** número CMD, frente (**orgânico** x **ADS**), formato (STORY, REELS, FEED), método
-   (A cartão atrás da cabeça, B tela dividida, C/D conforme `project_estilos_bcd`), arquivo de origem (bruto
+   (A cartão atrás da cabeça, B tela dividida, C/D: só existem na memória do autor; vídeos do Daniel em tela dividida usam o método C do plugin `video-daniel-comodo`), arquivo de origem (bruto
    `Teleprompter-*` ou montagem `CMDxxx.mp4`, regra 14h). Perguntar só o que faltar.
 3. **Conferir ferramentas e disco:** `ffmpeg`, Python 3.12, faster-whisper `medium`, espaço livre para o render.
 4. **Listar as ideias visuais do roteiro e pedir as fotos** (regra 15) antes de montar. Nunca inventar imagem nem chamar
@@ -28,11 +27,11 @@ regras fixas curtas, checklist de QA, registro no fim). Nada do `SKILL.md` origi
 - [ ] Números lidos pelo Whisper conferidos com 3 configurações e **avisados ao usuário**; correções e dúvidas listadas.
 - [ ] Sem palavras alucinadas depois da última fala real (`DROP_AFTER`).
 - [ ] Tela final/CTA conforme o padrão da frente (orgânico x ADS).
-- [ ] Entrega em `%USERPROFILE%\Claude\ENTREGAS\CMDxxx` (`*_FINAL`); rascunhos em `Claude\videos`.
+- [ ] Entrega em `%USERPROFILE%\Claude\ENTREGAS\CMDxxx` como um único `CMDxxx.mp4` (ADS: `CMDxxx - FEED.mp4` etc.); rascunhos em `Claude\videos`.
 
 ## 3. Registro (depois de entregar)
 
-- Pedido ou correção nova do usuário: gravar com **data** na memória (`feedback_*`) e, se mudar um padrão, no bloco
+- Pedido ou correção nova do usuário: gravar com **data** na memória do Claude (se houver) e, se mudar um padrão, no bloco
   datado do `SKILL.md`. Armadilha nova vai para "Armadilhas".
 - Não renderizar de novo sem pedido do usuário; ajuste depois da entrega vai para o código e para a skill.
 
@@ -47,7 +46,7 @@ regras fixas curtas, checklist de QA, registro no fim). Nada do `SKILL.md` origi
 
 ## 5. Conflitos encontrados no `SKILL.md` (a resolver; nada foi alterado)
 
-1. **`\fs` do ASS:** a regra 2 diz × 1,78 (corrigido em 2026-10-14); "Armadilhas" ainda diz × 1,93.
+1. ~~`\fs` do ASS 1,78 x 1,93~~: resolvido em 23/11/2026, vale × 1,78.
 2. **Motion e a cabeça:** 14e atrás (matte), 14i/14m cartão acima da cabeça, 14n NA FRENTE e morrendo no corte,
    atualização de 2026-10-19 "nada sobre a cabeça". Qual vale por método?
 3. **Quantidade de motions:** 14c (> 60% do tempo), 14k (≈ 1 a cada 15-20 s), 14n (≈ 1 por plano).

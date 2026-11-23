@@ -80,6 +80,8 @@ ILLUS = [
  ("scene", "final", "onde chega o lead da sua loja hoje", "ou crm"),
 ]
 CARD_AT = "segue o perfil da comodo"
+# VÍDEO NOVO: os valores acima são do exemplo CMD-novo1. Para começar do zero, deixe assim e vá preenchendo:
+# DROP_AFTER = 9999.0; BIG = []; QUOTES = []; BANNERS = []; ILLUS = []; CARD_AT = ""   (CARD_AT vazio = sem cartão "seguir")
 
 # ================= transcrição + correções editoriais =================
 words = []
@@ -251,11 +253,13 @@ for n, it in enumerate(ILLUS):
         overlays.append(dict(kind="anim", src="motion/%s/%%04d.png" % out, p0=p0, p1=p1, cy=270, bw=900))
     else:
         overlays.append(dict(kind="stock", src=name, p0=p0, p1=p1, cy=270, bw=900, tin=it[4]))
+os.makedirs(os.path.join(W, "motion"), exist_ok=True)
 json.dump(anim_jobs, open(os.path.join(W, "motion", "anims.json"), "w"), indent=1)
-ca = find_seq([norm(x) for x in CARD_AT.split()], 0)
-cs0 = remap_pre(words[ca]["s"]) - 0.35
-overlays.append(dict(kind="card", src="imagens/card_seguir.png", p0=cs0, p1=cs0 + 1.7, cy=1343, bw=630))
-overlays.append(dict(kind="card", src="imagens/card_seguindo.png", p0=cs0 + 1.7, p1=cs0 + 3.6, cy=1343, bw=630))
+if CARD_AT:
+    ca = find_seq([norm(x) for x in CARD_AT.split()], 0)
+    cs0 = remap_pre(words[ca]["s"]) - 0.35
+    overlays.append(dict(kind="card", src="imagens/card_seguir.png", p0=cs0, p1=cs0 + 1.7, cy=1343, bw=630))
+    overlays.append(dict(kind="card", src="imagens/card_seguindo.png", p0=cs0 + 1.7, p1=cs0 + 3.6, cy=1343, bw=630))
 
 # ================= legendas corridas =================
 qpre, qsuf = {}, {}
@@ -323,6 +327,8 @@ with open(os.path.join(W, "legendas.ass"), "w", encoding="utf-8") as f:
         f.write("Dialogue: %d,%s,%s,Default,,0,0,0,,%s\n" % (layer, ts(s), ts(e), txt))
 
 # ================= filtro: câmera estática por trecho =================
+# matte (recorte da pessoa) só é preciso quando há banner, animação ou stock passando ATRÁS da cabeça
+NEED_MATTE = any(o["kind"] in ("banner", "anim", "stock") for o in overlays)
 vparts, mparts, vl, ml = [], [], "", ""
 for n, (a, b, st, o) in enumerate(zsegs):
     z, x, y = CAM[st]
@@ -331,14 +337,14 @@ for n, (a, b, st, o) in enumerate(zsegs):
     vparts.append("[0:a]atrim=start=%.3f:end=%.3f,asetpts=PTS-STARTPTS[a%d]" % (a, b, n))
     mparts.append("[1:v]trim=start=%.3f:end=%.3f,setpts=PTS-STARTPTS,scale=1080:1920:flags=bicubic,format=gray,%s,crop=1080:1920:%d:%d,setsar=1[m%d]" % (a, b, sc.replace("lanczos", "bicubic"), x, y, n))
     vl += "[v%d][a%d]" % (n, n); ml += "[m%d]" % n
-g = vparts + mparts
+g = vparts + (mparts if NEED_MATTE else [])
 g.append("%sconcat=n=%d:v=1:a=1[vc0][ac0]" % (vl, len(zsegs)))
-g.append("%sconcat=n=%d:v=1:a=0[mc0]" % (ml, len(zsegs)))
+if NEED_MATTE: g.append("%sconcat=n=%d:v=1:a=0[mc0]" % (ml, len(zsegs)))
 g.append("[vc0]lut3d=file=%s:interp=tetrahedral,lutrgb=r='val*%.3f':g='val*%.3f':b='val*%.3f'[vc]" % (LUT, *GAIN))
-g.append("[vc]split[vbase][vtop]")
+g.append("[vc]split[vbase][vtop]" if NEED_MATTE else "[vc]null[vbase]")
 chain = "[vbase]"; inputs = []; head_windows = []
 def add_input(args):
-    inputs.append(args); return len(inputs) + 1          # 0 = bruto, 1 = matte
+    inputs.append(args); return len(inputs) + (1 if NEED_MATTE else 0)   # 0 = bruto, 1 = matte (se houver)
 for k, ov in enumerate(overlays):
     kind, p0, p1, cy, bw = ov["kind"], ov["p0"], ov["p1"], ov["cy"], ov["bw"]; d = p1 - p0
     if kind == "banner":
@@ -365,13 +371,16 @@ for k, ov in enumerate(overlays):
     g.append("%s[o%d]overlay=x='(W-w)/2':y='%d-h/2':enable='between(t,%.3f,%.3f)':format=auto[c%d]" % (chain, k, cy, p0, p1, k))
     chain = "[c%d]" % k
 en = "+".join("between(t,%.3f,%.3f)" % w for w in head_windows)
-g.append("[mc0]gblur=sigma=1.4[mc]")
-g.append("[vtop][mc]alphamerge[person]")
-g.append("%s[person]overlay=enable='gt(%s,0)':format=auto[comp]" % (chain, en))
+if NEED_MATTE and en:
+    g.append("[mc0]gblur=sigma=1.4[mc]")
+    g.append("[vtop][mc]alphamerge[person]")
+    g.append("%s[person]overlay=enable='gt(%s,0)':format=auto[comp]" % (chain, en))
+else:
+    g.append("%snull[comp]" % chain)
 g.append("[comp]setpts=PTS/%.4f,ass=legendas.ass:fontsdir=fonts[v]" % SPEED)
 g.append("[ac0]atempo=%.4f,loudnorm=I=%.1f:TP=-0.3:LRA=7[a]" % (SPEED, LUFS_TARGET))
 open(os.path.join(W, "filtro.txt"), "w", encoding="utf-8").write(";\n".join(g))
-json.dump({"inputs": inputs, "velocidade": SPEED, "duracao_final": round(TOTAL, 2), "z_largo": Z_W, "z_fechado": Z_T, "camera": {str(k): v for k, v in CAM.items()},
+json.dump({"precisa_matte": NEED_MATTE, "inputs": inputs, "velocidade": SPEED, "duracao_final": round(TOTAL, 2), "z_largo": Z_W, "z_fechado": Z_T, "camera": {str(k): v for k, v in CAM.items()},
            "trechos": len(zsegs), "flips_src": [round(f, 2) for f in flips], "overlays": [{k: v for k, v in o.items()} for o in overlays], "eventos": len(ev)},
           open(os.path.join(W, "cortes.json"), "w"), indent=1, default=float)
 print("trechos:", len(zsegs), "| trocas de zoom:", len(flips), "| final: %.1fs" % TOTAL, "| z %.3f/%.3f" % (Z_W, Z_T), "| camera", CAM, "| eventos:", len(ev), "| blocos:", len(runs))
