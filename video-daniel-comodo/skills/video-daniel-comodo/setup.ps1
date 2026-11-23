@@ -1,4 +1,4 @@
-# setup.ps1 — prepara o computador para os vídeos do clone do Daniel (Windows).
+﻿# setup.ps1 — prepara o computador para os vídeos do clone do Daniel (Windows).
 # Uso: powershell -ExecutionPolicy Bypass -File setup.ps1
 # Cria %USERPROFILE%\Comodo-Videos-Daniel com o .env (chaves em branco), confere Node, Python e ffmpeg
 # e instala o Whisper local (faster-whisper). Nunca sobrescreve um .env que já existe.

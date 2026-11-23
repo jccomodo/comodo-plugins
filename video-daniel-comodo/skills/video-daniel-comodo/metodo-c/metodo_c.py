@@ -15,6 +15,8 @@ Nada aqui gasta créditos: o vídeo da HeyGen já precisa existir (formato B, Po
 """
 import argparse, json, os, re, shutil, subprocess, sys
 AQUI = os.path.dirname(os.path.abspath(__file__))
+try: sys.stdout.reconfigure(encoding="utf-8")  # acentos certos no console do Windows
+except Exception: pass
 FPS = 30
 
 def ff(*a): subprocess.run(["ffmpeg", "-v", "error", "-y", *a], check=True)
@@ -45,7 +47,7 @@ def chunks(pasta, D=None):
     W = []
     for s in json.load(open(os.path.join(pasta, "palavras.json"), encoding="utf-8-sig")): W += s["words"]
     clean = lambda t: re.sub(r"[^\wÀ-ÿ]", "", t.lower())
-    NOEND = {"a","o","as","os","um","uma","de","da","do","das","dos","em","no","na","nos","nas","por","pra","para","com","que","e","ou","mas","se","ao","à","seu","sua","mais","já","só","é","cada"}
+    NOEND = {"a","o","as","os","um","uma","de","da","do","das","dos","em","no","na","nos","nas","por","pra","para","com","que","e","ou","mas","se","ao","à","seu","sua","mais","já","só","é","cada","esse","essa","este","esta","isso","meu","minha","te","lhe"}
     disp = lambda i: re.sub(r"[.,;:!?]+$", "", W[i]["w"]) + ("?" if W[i]["w"].endswith("?") else "")
     segs, cur = [], []
     for i, w in enumerate(W):

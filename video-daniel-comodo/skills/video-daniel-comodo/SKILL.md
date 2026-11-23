@@ -29,7 +29,8 @@ Python: no Windows `python` (ou `py`), no Mac `python3`.
 2. Se avisar FALTA INSTALAR, peça para a pessoa instalar o que faltou e rode de novo.
 3. Se avisar FALTA A CHAVE: abra o `.env` para a pessoa (Windows `notepad "%USERPROFILE%\Comodo-Videos-Daniel\.env"`; Mac `open -e ~/Comodo-Videos-Daniel/.env`) e peça para colar as chaves **da Cômodo** (ElevenLabs, id da voz "Daniel v4", HeyGen) e salvar. **Nunca** peça chave no chat, nunca leia, imprima ou copie os valores do `.env`.
 4. Conector da HeyGen: precisa estar conectado no Claude (Personalização → Conectores → HeyGen) **na conta da Cômodo**, com login feito pela própria pessoa. Confira com `get_current_user`; se a conta não for a da Cômodo, pare e avise.
-5. Só para o formato C: `pip install playwright pillow numpy` e `python -m playwright install chromium` (o setup já tenta).
+5. O setup também instala o que o formato C usa (`faster-whisper playwright pillow numpy` + `python -m playwright install chromium`, ≈ 300 MB na 1ª vez). Se tudo já estiver instalado, pule o setup.
+6. Windows: rode os scripts com `$env:PYTHONIOENCODING='utf-8'` no PowerShell para os acentos aparecerem certos no console.
 
 ## 1. Texto
 - Se a pessoa mandar um texto base, **seguir o texto base** (só ajustar pontuação para pausas). Não reescrever sem pedir.
@@ -87,14 +88,18 @@ Layout fixo 1080×1920: **topo 0–960** = animação sobre fundo claro quadricu
 
 Tudo pelo script `metodo-c/metodo_c.py` (nada gasta crédito):
 ```
-python "<pasta desta skill>/metodo-c/metodo_c.py" preparar PASTA/B/video.mp4 PASTA/C
-python ".../metodo_c.py" daniel PASTA/C --cabelo Y --rosto-x X        (Y, X medidos no guia.jpg × 2)
-python ".../metodo_c.py" teste PASTA/C 1.0,4.5,9.2                       (folha_teste.jpg)
-python ".../metodo_c.py" quadros PASTA/C
-python ".../metodo_c.py" sfx PASTA/C --soft T,T --tick T --swish T
-python ".../metodo_c.py" montar PASTA/C PASTA/C/video_C.mp4
+python "<pasta desta skill>/metodo-c/metodo_c.py" preparar CAMINHO/DO/VIDEO_B.mp4 PASTA/C
+python "<pasta desta skill>/metodo-c/metodo_c.py" chunks PASTA/C          (depois de corrigir o palavras.json)
+python "<pasta desta skill>/metodo-c/metodo_c.py" daniel PASTA/C --cabelo Y --rosto-x X
+python "<pasta desta skill>/metodo-c/metodo_c.py" teste PASTA/C 1.0,2.0,3.3,4.8,...   (10 a 15 tempos)
+python "<pasta desta skill>/metodo-c/metodo_c.py" quadros PASTA/C
+python "<pasta desta skill>/metodo-c/metodo_c.py" sfx PASTA/C --soft T,T --tick T,T --swish T,T
+python "<pasta desta skill>/metodo-c/metodo_c.py" montar PASTA/C PASTA/C/video_C.mp4
 ```
-1. **preparar** transcreve (palavras.json), gera a pílula (chunks.js), copia o `overlay.html` de exemplo e os assets. Corrija grafias no `palavras.json` ("para" falado como "pra", nomes) e rode `chunks PASTA`.
+O B pode estar em qualquer pasta: aponte o `preparar` direto para o MP4 dele (ele copia como `base.mp4` dentro de `C/`).
+1. **preparar** transcreve (palavras.json), gera a pílula (chunks.js), copia o `overlay.html` de exemplo, os assets e salva `guia.jpg`. Corrija grafias no `palavras.json` ("para" falado como "pra", nomes) e rode `chunks`.
+   **Medir para o `daniel`:** o `guia.jpg` é o quadro do meio do vídeo em metade do tamanho (540×960). Y = linha do fio de cabelo mais alto; X = ponto entre as duas orelhas. Multiplique os dois por 2. Se estiver difícil de ler, amplie a região da cabeça. Depois confira o `daniel_quadro.jpg`: cabelo 40 a 90 px abaixo do topo e rosto entre x 440 e 640 (o Daniel se mexe; uma pose diferente é normal).
+   Se a cena for a mesma do `exemplo_cena.html` (atendimento, cena 1), o `overlay.html` copiado já serve: pule os passos 2 e 3.
 2. **Plano de cenas antes de animar**: escreva frase → o que aparece (quem, o quê, onde). A animação **encena a fala literalmente** (pessoas, balão, loja, moeda, passos numerados), não metáfora abstrata; gráfico só quando a fala cita dado.
 3. **Escrever as cenas** em `PASTA/C/overlay.html`. Use o `exemplo_cena.html` como modelo aprovado: motor de molas `P(nome, inicial, [[t, alvo, resposta, amortecimento]])`, `pop()` para posicionar, ícones prontos (`avatar`, `storeI` loja, `bubble`, `dblck` ✓✓, `coin` R$, `tile` número, `chk`, `tagP` etiqueta, logo do WhatsApp). Regras:
    - Cada elemento entra **0,05–0,25 s antes** da palavra, nunca depois. Nenhum trecho > 0,5 s parado (o `pop` já dá uma flutuação leve).
@@ -102,7 +107,8 @@ python ".../metodo_c.py" montar PASTA/C PASTA/C/video_C.mp4
    - Um elemento sozinho fica no centro do topo (540, 480); contexto de cena anterior esmaece (30–50%).
    - Destaque sempre laranja Cômodo; neutros cinza; só Poppins; texto na tela só com palavras que o Daniel fala.
    - Nada de conversa/print de WhatsApp em vídeo orgânico (só logo e ícones).
-4. **teste** em 8–15 tempos-chave e olhar a folha; depois **quadros**, **sfx** (sons leves nas entradas) e **montar** (o áudio sai a −14 LUFS e o script confere a sincronia: deslocamento tem que ser 0,00 s).
+4. **teste** com 10 a 15 tempos: um logo depois de cada entrada `P(...)` do overlay (+0,4 s) e um no meio de cada cena longa. Na `folha_teste.jpg` confira: cada elemento já está na tela quando a palavra aparece na pílula; nada sobreposto; nada fora de x 90–990 / y 262–930. Pílula com uma palavra só no começo de um trecho é normal (as palavras entram uma a uma).
+   Depois **quadros**, **sfx** e **montar**. Os tempos do sfx saem das chamadas `P(nome, 0, [[t, 1, ...]])` do overlay: `--soft` = entrada de ícone grande (avatar, loja, balão); `--tick` = check, número ou moeda; `--swish` = saída ou movimento grande. De 10 a 20 sons para 25 s, nunca dois a menos de 0,15 s. O **montar** deixa o áudio em −14 LUFS e confere a sincronia: o deslocamento tem que ser 0,00 s.
 5. **Validar antes de entregar**: rodar o agente `validador-videos` (se existir) ou revisar você mesmo os quadros contra: palavra cortada pela pílula, elementos sobrepostos, margem, trecho parado, elemento atrasado.
 
 ## O que não fazer (já reprovado)

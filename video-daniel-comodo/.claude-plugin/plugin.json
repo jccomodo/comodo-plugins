@@ -1,6 +1,6 @@
 {
   "name": "video-daniel-comodo",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Vídeos com o clone de IA do Daniel em 3 formatos: A horizontal (YouTube), B vertical (Shorts/Reels) e C tela dividida com animações. Narração ElevenLabs + HeyGen Avatar 6 Turbo.",
   "author": {
     "name": "Cômodo"
