@@ -55,13 +55,19 @@ if a.ass and W:
     for l in open(a.ass, encoding="utf-8"):
         if not l.startswith("Dialogue:"): continue
         p = l.rstrip("\n").split(",", 9); txt = re.sub(r"\{[^}]*\}", "", p[9]).strip()
+        if "\\p1" in p[9]: continue   # desenho da pílula, não é texto
         for tok in txt.split():
             if len(re.sub(r"[^\wÀ-ÿ]", "", tok)) >= 3: ev.append((ts(p[1]), tok))  # palavras curtas casam errado
     nz = lambda t: re.sub(r"[^\wÀ-ÿ]", "", t.lower())
-    ev.sort(); j = 0; d = []
-    for t, tok in ev:
-        for k in range(j, min(j + 4, len(W))):
-            if nz(W[k]["w"]) and nz(W[k]["w"]) == nz(tok): d.append((tok, round(t - W[k]["s"], 2))); j = k + 1; break
+    ev.sort(); un = []; last = {}
+    for t, tok in ev:                                   # cada palavra vira vários eventos (entrada animada): fica o 1º
+        if nz(tok) in last and t - last[nz(tok)] < 0.6: last[nz(tok)] = t; continue
+        last[nz(tok)] = t; un.append((t, tok))
+    d = []; usados = set()
+    for t, tok in un:                                   # casa com a mesma palavra falada mais próxima no tempo (±1,5 s)
+        cands = [k for k in range(len(W)) if k not in usados and nz(W[k]["w"]) == nz(tok) and abs(W[k]["s"] - t) <= 1.5]
+        if cands:
+            k = min(cands, key=lambda k: abs(W[k]["s"] - t)); usados.add(k); d.append((tok, round(t - W[k]["s"], 2)))
     if d:
         ruins = [x for x in d if x[1] > 0.25 or x[1] < -0.6]
         sync = f"{len(d)} palavras casadas, desvio médio {sum(x[1] for x in d) / len(d):+.2f} s, {len(ruins)} fora de −0,6…+0,25 s"

@@ -1,6 +1,6 @@
 {
   "name": "validador-videos-comodo",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Validador crítico dos vídeos da Cômodo: mede sobreposição, margens, legenda, sincronia e loop, revisa os quadros contra o checklist do cliente e escreve um laudo GRAVE/MÉDIO/LEVE antes da entrega.",
   "author": {
     "name": "Cômodo"
