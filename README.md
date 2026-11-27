@@ -1,5 +1,7 @@
 # Plugins do Claude da Cômodo
 
+> **Quer fazer vídeos do Daniel? Abra o [COMECE-AQUI.md](COMECE-AQUI.md)**: dois textos para copiar e colar no Claude, sem precisar saber programar.
+
 Marketplace privado com os plugins de vídeo da Cômodo:
 
 - **video-daniel-comodo**: vídeos com o clone de IA do Daniel nos formatos A (horizontal), B (vertical) e C (tela dividida); voz na ElevenLabs, vídeo na HeyGen. Veja `video-daniel-comodo/LEIA-ME.md`.
