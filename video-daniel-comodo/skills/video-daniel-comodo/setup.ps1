@@ -11,6 +11,7 @@ if (-not (Test-Path $envFile)) {
 ELEVENLABS_API_KEY=
 ELEVENLABS_VOICE_A=
 ELEVENLABS_MODEL_A=eleven_v4
+ELEVENLABS_VOICE_DAN=
 ELEVENLABS_SETTINGS_A={"stability":0.1,"similarity_boost":0.88}
 HEYGEN_API_KEY=
 '@ | Out-File -Encoding utf8 $envFile
@@ -21,7 +22,7 @@ $py = (Get-Command python -ErrorAction SilentlyContinue)
 if (-not $py) { $py = (Get-Command py -ErrorAction SilentlyContinue) }
 if (-not $py) { $falta += "Python 3.12 (python.org, marcar 'Add to PATH')" }
 if (-not (Get-Command ffmpeg -ErrorAction SilentlyContinue)) { $falta += "ffmpeg (winget install Gyan.FFmpeg)" }
-if ($py) { & $py.Source -m pip install --quiet --disable-pip-version-check faster-whisper playwright pillow numpy; & $py.Source -m playwright install chromium }
+if ($py) { & $py.Source -m pip install --quiet --disable-pip-version-check faster-whisper mediapipe playwright pillow numpy; & $py.Source -m playwright install chromium }
 Write-Output ""
 Write-Output "PASTA: $dest"
 if ($falta.Count) { Write-Output ("FALTA INSTALAR: " + ($falta -join "; ")) }

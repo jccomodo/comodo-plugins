@@ -1,4 +1,6 @@
-// Narração com a voz do Daniel (ElevenLabs, voz "Daniel v4").
+// Narração com a voz do Daniel (ElevenLabs).
+// Vozes no .env: ELEVENLABS_VOICE_<NOME> (+ opcional _MODEL_<NOME> e _SETTINGS_<NOME>; sem eles usa os da A).
+//   --voz A (padrão, "Daniel v4")   --voz DAN (voz nova, testada no Visita Marcada 1)   --voz QUALQUER = ELEVENLABS_VOICE_QUALQUER
 //
 // Roteiro inteiro (um MP3 por "## CENA ..."; sem cabeçalhos = um MP3 só):
 //   node narrar.js ROTEIRO.txt --saida PASTA [--style 0.5] [--stability 0.35] [--pular 1,2] [--so 3]
@@ -19,11 +21,12 @@ for (const l of fs.readFileSync(envPath, 'utf8').split(/\r?\n/)) {
   const m = l.match(/^\uFEFF?([A-Z0-9_]+)=(.*)$/);
   if (m) env[m[1]] = m[2].trim().replace(/^"|"$/g, '');
 }
-const key = env.ELEVENLABS_API_KEY, voice = env.ELEVENLABS_VOICE_A, model = env.ELEVENLABS_MODEL_A;
-if (!key || !voice || !model) { console.error('faltam ELEVENLABS_API_KEY / _VOICE_A / _MODEL_A no .env'); process.exit(1); }
+const _vi = process.argv.indexOf('--voz'), VZ = (_vi > 0 ? process.argv[_vi + 1] : 'A').toUpperCase();
+const key = env.ELEVENLABS_API_KEY, voice = env['ELEVENLABS_VOICE_' + VZ], model = env['ELEVENLABS_MODEL_' + VZ] || env.ELEVENLABS_MODEL_A;
+if (!key || !voice || !model) { console.error('faltam ELEVENLABS_API_KEY / _VOICE_' + VZ + ' / _MODEL_A no .env'); process.exit(1); }
 
 const arg = (n) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : null; };
-let settings = env.ELEVENLABS_SETTINGS_A ? JSON.parse(env.ELEVENLABS_SETTINGS_A) : {};
+let settings = JSON.parse(env['ELEVENLABS_SETTINGS_' + VZ] || env.ELEVENLABS_SETTINGS_A || '{}');
 if (arg('--style')) settings.style = Number(arg('--style'));
 if (arg('--stability')) settings.stability = Number(arg('--stability'));
 const saida = arg('--saida');
@@ -40,7 +43,7 @@ async function tts(text, extra = {}) {
 }
 
 (async () => {
-  console.log('voz', voice, 'modelo', model, 'ajustes', JSON.stringify(settings));
+  console.log('voz', 'ELEVENLABS_VOICE_' + VZ, 'modelo', model, 'ajustes', JSON.stringify(settings));
   if (arg('--frase')) {
     const extra = {};
     if (arg('--antes')) extra.previous_text = arg('--antes');

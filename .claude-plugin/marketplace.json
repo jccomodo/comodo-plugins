@@ -7,7 +7,7 @@
     {
       "name": "video-daniel-comodo",
       "source": "./video-daniel-comodo",
-      "description": "Vídeos com o clone de IA do Daniel em 3 formatos: A horizontal (YouTube), B vertical (Shorts/Reels) e C tela dividida com animações. Narração ElevenLabs + HeyGen Avatar 6 Turbo."
+      "description": "Vídeos com o clone de IA do Daniel: formatos A horizontal, B vertical e C tela dividida; vozes ElevenLabs selecionáveis (--voz), HeyGen Avatar 6 Turbo, edição de anúncio (REELS e STORY estilo B), reaproveitar edição com voz nova e censura de palavrão."
     },
     {
       "name": "editor-videos-comodo",

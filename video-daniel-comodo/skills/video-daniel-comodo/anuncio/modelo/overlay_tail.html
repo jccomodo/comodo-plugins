@@ -1,0 +1,5 @@
+
+window.render=t=>{MODS.forEach(m=>{const k=g('m'+m.id,t);const on=t>=m.ta-.03&&t<m.tb+.55;m.root.style.display=on?'block':'none';if(!on)return;
+ const kk=Math.min(Math.max(k,0),1.04);m.root.style.opacity=cl(k*1.7);m.root.style.transform=`translateY(${(1-Math.min(kk,1))*26}px) scale(${lerp(.93,1,kk)})`;m.root.style.filter=k<.98?`blur(${(1-cl(k))*12}px)`:'none';m.upd(t)})};
+document.fonts.ready.then(()=>Promise.all([600,700,900].map(w=>document.fonts.load(w+' 40px P')))).then(()=>{window.render(0);window.READY=1});
+</script>

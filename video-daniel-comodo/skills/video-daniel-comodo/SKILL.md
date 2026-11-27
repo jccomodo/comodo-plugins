@@ -1,6 +1,6 @@
 ---
 name: video-daniel-comodo
-description: Gera vídeos com o clone de IA do Daniel (Cômodo) em três formatos — A horizontal 16:9 (vídeo principal do YouTube, estúdio Podcast Horizontal), B vertical 9:16 (Podcast Vertical, celular) e C tela dividida (método C: animações em cima, Daniel embaixo, legenda em pílula laranja na emenda). Narração com a voz dele na ElevenLabs, vídeo na HeyGen com Avatar 6 Turbo, troca de frases soltas sem regravar tudo e entrega do MP4. Usar sempre que alguém da Cômodo pedir "um vídeo do Daniel", "gerar com o clone", "narrar com a voz do Daniel", "versão vertical", "tela dividida", "método C", "formato A/B/C", vídeos de YouTube de 5 min dos ebooks, Shorts/Reels do clone ou vídeos curtos (avisos, testes do avatar), mesmo sem dizer "skill".
+description: Gera vídeos com o clone de IA do Daniel (Cômodo) em três formatos — A horizontal 16:9 (vídeo principal do YouTube, estúdio Podcast Horizontal), B vertical 9:16 (Podcast Vertical, celular) e C tela dividida (método C: animações em cima, Daniel embaixo, legenda em pílula laranja na emenda). Narração com a voz dele na ElevenLabs (voz padrão ou voz nova, ex.: DAN), vídeo na HeyGen com Avatar 6 Turbo, edição de anúncio (ADS REELS e STORY estilo B com copy animada e cartões), censura de palavrão (pi + tarja na boca), refazer uma edição pronta com voz nova, troca de frases soltas sem regravar tudo e entrega do MP4. Usar sempre que alguém da Cômodo pedir "um vídeo do Daniel", "gerar com o clone", "narrar com a voz do Daniel", "versão vertical", "tela dividida", "método C", "formato A/B/C", vídeos de YouTube de 5 min dos ebooks, Shorts/Reels do clone ou vídeos curtos (avisos, testes do avatar), anúncios/ADS com o clone ("editar o anúncio", "estilo B", "STORY/REELS"), "testar outra voz", "refazer com a voz nova", "censurar/bipar o palavrão", mesmo sem dizer "skill".
 ---
 
 # Vídeos do clone do Daniel (ElevenLabs + HeyGen)
@@ -8,6 +8,21 @@ description: Gera vídeos com o clone de IA do Daniel (Cômodo) em três formato
 Quem usa: qualquer pessoa da Cômodo, sem saber programar. Você (Claude) faz tudo; a pessoa aprova o texto, o áudio e o gasto.
 
 Ordem fixa: **texto → narração → aprovação do áudio → vídeo → conferência → entrega**. Nunca gerar o vídeo antes de a pessoa aprovar o áudio: áudio é barato de refazer, vídeo não.
+
+### O fluxo inteiro, ligado (voz → HeyGen → edição)
+| Passo | Comando / ferramenta | Gasta? |
+|---|---|---|
+| 1. Texto | roteiro.txt (passo 1) | — |
+| 2. Voz | `node scripts/narrar.js roteiro.txt --saida PASTA/audio --voz A\|DAN` (passo 2) | ElevenLabs ≈ 1 crédito/caractere → **pedir OK** |
+| 3. Aprovação do áudio | mandar o MP3 para ouvir | — |
+| 4. Vídeo | HeyGen look A ou B (passo 4) + `scripts/baixar_video.py` | HeyGen ≈ 20 créditos/min → **pedir OK** |
+| 5a. Edição YouTube/Shorts | formato C (passo 5) ou corte simples | 0 |
+| 5b. Edição de anúncio | `anuncio/anuncio.py` (passo 6): REELS simples ou STORY estilo B | 0 |
+| 5c. Censura | `anuncio.py censura` (passo 8) | 0 |
+| 6. Validar | agente `validador-videos` (plugin validador-videos-comodo) | 0 |
+| 7. Entregar | MP4 + custo (Fechamento) | — |
+
+Refazer um vídeo pronto com **outra voz** = passos 2 → 3 → 4 com o mesmo roteiro e depois `anuncio.py reaproveitar` (passo 7): a edição antiga é reaplicada no tempo da fala nova, sem refazer animação à mão.
 
 ## Os três formatos
 
@@ -41,8 +56,15 @@ Python: no Windows `python` (ou `py`), no Mac `python3`.
 ## 2. Narração (ElevenLabs — pedir OK do custo antes)
 Custo ≈ 1 crédito ElevenLabs por caractere: diga o total antes de gerar.
 ```
-node "<pasta desta skill>/scripts/narrar.js" ROTEIRO.txt --saida PASTA/audio --style 0.5
+node "<pasta desta skill>/scripts/narrar.js" ROTEIRO.txt --saida PASTA/audio --style 0.5 [--voz DAN]
 ```
+**Vozes** (cada uma é uma linha `ELEVENLABS_VOICE_<NOME>=id` no `.env`; `_MODEL_<NOME>`/`_SETTINGS_<NOME>` são opcionais, sem eles valem os da A):
+| `--voz` | Voz | Quando |
+|---|---|---|
+| `A` (padrão) | "Daniel v4" | tudo, até a pessoa trocar o padrão |
+| `DAN` | voz nova do Dan (testada no anúncio Visita Marcada 1, 27/11/2026) | quando pedirem "a voz nova" |
+| outro nome | qualquer voz que a pessoa acrescentar | testes de voz |
+Voz nova: crie a linha vazia `ELEVENLABS_VOICE_<NOME>=` no `.env`, abra o arquivo para a pessoa colar o id e salvar (nunca peça o id no chat nem leia o `.env`). O script mostra só o nome da variável, nunca o id.
 - Com `## CENA` → um MP3 por cena (`--so 3` refaz só a cena 3; `--pular 1,2`). Sem cabeçalhos → `narracao.mp3`.
 - Ajustes aprovados:
   - YouTube, explicação com emoção: `--style 0.5`.
@@ -111,6 +133,44 @@ O B pode estar em qualquer pasta: aponte o `preparar` direto para o MP4 dele (el
    Depois **quadros**, **sfx** e **montar**. Os tempos do sfx saem das chamadas `P(nome, 0, [[t, 1, ...]])` do overlay: `--soft` = entrada de ícone grande (avatar, loja, balão); `--tick` = check, número ou moeda; `--swish` = saída ou movimento grande. De 10 a 20 sons para 25 s, nunca dois a menos de 0,15 s. O **montar** deixa o áudio em −14 LUFS e confere a sincronia: o deslocamento tem que ser 0,00 s.
 5. **Validar antes de entregar**: rodar o agente `validador-videos` (se existir) ou revisar você mesmo os quadros contra: palavra cortada pela pílula, elementos sobrepostos, margem, trecho parado, elemento atrasado.
 
+## 6. Anúncio (ADS) — edição REELS simples ou STORY estilo B (0 crédito)
+Parte do vídeo **B vertical** da HeyGen. Motor em `<pasta desta skill>/anuncio/` (modelo pronto = anúncio "Visita Marcada 1"). Cada anúncio tem uma pasta de edição (ex.: `<anuncio>/edit`).
+```
+python "<pasta desta skill>/anuncio/anuncio.py" novo VIDEO_B.mp4 PASTA/edit
+python "<pasta desta skill>/anuncio/anuncio.py" render PASTA/edit reels           (REELS simples: pílula vermelha, zooms, CTA)
+python "<pasta desta skill>/anuncio/anuncio.py" overlay PASTA/edit                 (depois de escrever o overlay_mods.js)
+python "<pasta desta skill>/anuncio/anuncio.py" frames PASTA/edit                  (renderiza copy + cartões, ~3 min)
+python "<pasta desta skill>/anuncio/anuncio.py" render PASTA/edit story           (STORY estilo B)
+```
+- **novo** copia o modelo, transcreve (`palavras.json`) e monta o overlay de exemplo. Corrija grafias no `palavras.json` (nomes, "Cômodo").
+- **REELS simples**: só `render reels`. Legenda de ADS em pílula vermelha `#E5322B` (y 1066), dois zooms ×1,166 trocando no início de frase, CTA final escurecendo + "clica no / **botão** / aqui embaixo" (as palavras que o Daniel fala), áudio −19,5 LUFS.
+- **STORY estilo B**: copy cinética `kin()` (palavras grandes entrando com a fala) e cartões de vidro `mod()` com ícones, contadores e fluxos, no `overlay_mods.js` (use o do Visita Marcada como modelo). No `build_story_b.py` ajuste só os blocos `>>> DO ANÚNCIO <<<`: `KIN` = os mesmos intervalos dos `kin()` (ali a pílula some) e os tempos dos sons (pop em número/ícone, whoosh em entrada de copy/cartão). Pílula em y 1425; margem do STORY x 64–1015 / y 285–1634. Estilo B nunca leva banco de vídeo nem 3D.
+- Ordem de entrega dos ADS: STORY → aprovação → REELS → FEED.
+- Saída: `saida_STORY.mp4` / `saida_REELS.mp4` na pasta de edição; copie para a pasta do anúncio com nome claro (ex.: `Visita Marcada 1 - STORY (estilo B).mp4`).
+
+## 7. Refazer com voz nova reaproveitando a edição (0 crédito na edição)
+Mesmo roteiro, narração nova (outra voz ou outro take) → vídeo B novo na HeyGen → reaplica a edição pronta:
+```
+python "<pasta desta skill>/anuncio/anuncio.py" reaproveitar EDIT_ANTIGO VIDEO_B_NOVO.mp4 PASTA_NOVA/edit
+python "<pasta desta skill>/anuncio/anuncio.py" frames PASTA_NOVA/edit
+python "<pasta desta skill>/anuncio/anuncio.py" render PASTA_NOVA/edit story
+```
+- Transcreve a fala nova e casa palavra por palavra com a antiga (`tmap.json`). Copy animada, cartões, sons e intervalos sem pílula vão sozinhos para o tempo novo; legenda e zooms são recalculados da fala nova.
+- Abaixo de ~90% de palavras casadas, o roteiro mudou: confira os tempos à mão.
+- Sempre rodar o validador depois. Pontos que costumam aparecer: pílula de 1–2 palavras piscando (< 0,3 s) antes de uma copy animada → ajuste o início daquele `KIN`; cartão abrindo vazio.
+- Nunca sobrescreva a versão anterior: pasta nova (ex.: `voz-dan/`) e arquivo com sufixo (`... - voz DAN.mp4`).
+
+## 8. Censura de palavrão (pi + tarja preta na boca, estilo TV)
+Depois do primeiro render (a boca é medida no vídeo montado, com zoom):
+```
+python "<pasta desta skill>/anuncio/anuncio.py" censura PASTA/edit --palavra merda [--formato story|reels]
+python "<pasta desta skill>/anuncio/anuncio.py" render PASTA/edit story
+```
+- Acha a palavra no `palavras.json`, mede o começo/fim pelo volume da voz (tabela com `PI` impressa: confira que não sobra o "m" antes nem corta a palavra anterior) e grava `censura.json`.
+- O render então zera a voz no trecho, põe um pi de 1 kHz no mesmo volume da fala, uma tarja preta 210×104 seguindo os lábios quadro a quadro e troca a legenda por `m***a`.
+- Ajuste fino: `--a 16.29 --b 16.84` (segundos). Pi encostando na palavra anterior → aumente `--a` uns 0,04 s; sílaba escapando → diminua.
+- Confira com uma folha de quadros do trecho e ouvindo; o validador confere tarja em todos os quadros do pi.
+
 ## O que não fazer (já reprovado)
 - Fundo verde/chroma para recortar o Daniel. Cenário novo = look feito na HeyGen (Look Studio), nunca recorte.
 - Enviar foto de cenário para a HeyGen ou criar look só por texto sem a pessoa aprovar.
@@ -119,4 +179,4 @@ O B pode estar em qualquer pasta: aponte o `preparar` direto para o MP4 dele (el
 - Criar conta ou digitar senha: a pessoa faz o login.
 
 ## Fechamento
-No fim diga onde está o MP4 e o custo: caracteres ElevenLabs e créditos HeyGen (antes/depois via `get_current_user`). O formato C não gasta créditos.
+No fim diga onde está o MP4 e o custo: caracteres ElevenLabs e créditos HeyGen (antes/depois via `get_current_user`). O formato C, a edição de anúncio, o reaproveitamento e a censura não gastam créditos. Antes de entregar, rode o validador (`validador-videos`) e corrija os achados GRAVE/MÉDIO.
