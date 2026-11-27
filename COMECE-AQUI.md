@@ -2,10 +2,12 @@
 
 Você não precisa saber programar. Cole o **Texto 1** uma vez e depois use o **Texto 2** sempre que quiser um vídeo. O Claude faz o resto e pede seu OK antes de gastar créditos.
 
-## Antes de começar (peça ao João)
-1. **Acesso a este repositório**: o convite chega no seu e-mail do GitHub. Aceite o convite.
-2. **Chaves da Cômodo** (ElevenLabs, HeyGen e os ids das vozes), por um canal privado. Você só cola no arquivo `.env` quando o Claude abrir. **Nunca cole chave no chat.**
-3. App **Claude** instalado, usando a aba **Code**.
+## Antes de começar (uma vez só)
+1. Instale o app **Claude** (claude.ai/download) e entre com a conta da Cômodo. Use a aba **Code**.
+2. Peça ao João as **chaves da Cômodo** (ElevenLabs, HeyGen e os ids das vozes), por um canal privado. Você só cola no arquivo `.env` quando o Claude abrir. **Nunca cole chave no chat.**
+3. Tenha o login da **HeyGen** da Cômodo para conectar no Claude.
+
+Este repositório é público: não precisa de convite. O endereço do marketplace é **`jccomodo/comodo-plugins`**.
 
 ## Texto 1 — instalar (cole uma vez só, na aba Code)
 ```
@@ -32,6 +34,11 @@ Antes de gastar créditos, me diga quanto custa e espere meu OK. No fim, passe o
 - `Censure o palavrão do vídeo [nome].`
 - `Agora faça a versão tela dividida desse vídeo.`
 - `Troque a frase "[frase]" sem regravar tudo.`
+
+## Se aparecer um aviso
+- **FALTA INSTALAR** (Node.js, Python ou ffmpeg): instale o que o Claude indicar e cole o Texto 1 de novo.
+- **FALTA A CHAVE**: cole a chave no `.env` que o Claude abriu, salve e peça para continuar.
+- **HeyGen em outra conta**: desconecte e entre com o login da Cômodo.
 
 ## O que acontece depois
 1. O Claude grava a narração e manda para você ouvir. Você responde **"aprovada"**.

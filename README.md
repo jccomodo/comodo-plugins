@@ -17,4 +17,4 @@ No terminal `claude`:
 /plugin install editor-videos-comodo@comodo
 /plugin install validador-videos-comodo@comodo
 ```
-É preciso ter acesso a este repositório privado no GitHub.
+Repositório público: qualquer pessoa da Cômodo adiciona sem convite. As chaves (ElevenLabs, HeyGen) não ficam aqui; cada pessoa cola no próprio `.env`.
